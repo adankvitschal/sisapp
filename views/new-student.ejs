@@ -1,0 +1,27 @@
+<%- include('layout'); -%>
+
+<form method="POST" action="/new-student">
+    <div class="form-group">
+        <label for="studentName">Nome do Aluno</label>
+        <input type="text" class="form-control" id="studentName" name="studentName" placeholder="Informe o nome do aluno">
+    </div>
+    <div class="form-group">
+        <label for="parentName">Nome do Responsável</label>
+        <input type="text" class="form-control" id="parentName" name="parentName" placeholder="Informe o nome do responsável">
+    </div>
+    <div class="form-group">
+        <label for="birthDate">Data de Nascimento</label>
+        <input type="date" class="form-control" id="birthDate" name="birthDate" placeholder="Informe a data de nascimento">
+    </div>
+    <div class="form-group">
+        <label for="schoolClass">Turma</label>
+        <select class="form-control" id="schoolClass" name="schoolClass">
+            <option>Maternal I</option>
+            <option>Maternal II</option>
+            <option>Pré 1</option>
+            <option>Primeiro Ano</option>
+            <option>Segundo Ano</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Registrar</button>
+</form>

@@ -1,0 +1,57 @@
+<%- include('layout'); -%>
+<div class="container">
+    <h1>Lista de Turmas</h1>
+    <hr>
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a class="nav-link active" href="#">Turmas Ativas</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Turmas Arquivadas</a>
+      </li>
+    </ul>
+    <div class="tab-content">
+      <div class="tab-pane fade show active" id="active-classes" role="tabpanel">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nome da Turma</th>
+              <th>Localização</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (const schoolClass of activeClasses) { %>
+              <tr>
+                <td><%= schoolClass.id %></td>
+                <td><%= schoolClass.className %></td>
+                <td><%= schoolClass.classLocation %></td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+      <div class="tab-pane fade" id="archived-classes" role="tabpanel">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nome da Turma</th>
+              <th>Localização</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% archivedClasses.forEach((schoolClass) => { %>
+              <tr>
+                <td><%= schoolClass.id %></td>
+                <td><%= schoolClass.className %></td>
+                <td><%= schoolClass.classLocation %></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  
