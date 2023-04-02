@@ -1,0 +1,37 @@
+{
+  "name": "sisapp",
+  "version": "0.0.1",
+  "description": "Sistema para administração e controle financeiro de associações de pais e professores do Brasil",
+  "main": "index.js",
+  "type":"module",
+  "scripts": {
+    "serve": "node src/index.js",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adankvitschal/sisapp.git"
+  },
+  "keywords": [
+    "Associações",
+    "Pais",
+    "Professores",
+    "Mestres",
+    "Fucionários",
+    "Escolas"
+  ],
+  "author": "Adan Kvitschal",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/adankvitschal/sisapp/issues"
+  },
+  "homepage": "https://github.com/adankvitschal/sisapp#readme",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "level": "^8.0.0",
+    "nanoid": "^4.0.2",
+    "pdfkit": "^0.13.0"
+  }
+}
