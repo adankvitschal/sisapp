@@ -31,6 +31,17 @@ app.get('/new-class', (req, res) => {
   res.render('new-class');
 });
 
+async function getActiveClasses() {
+  const activeClasses = [];
+  for await (const [key, value] of classes_db.iterator()) {
+    const classInfo = JSON.parse(value);
+    if (classInfo.classState === 'Ativa') {
+      activeClasses.push(classInfo);
+    }
+  }
+  return activeClasses;
+}
+
 app.get('/classes', async (req, res) => {
   const activeClasses = [];
   const archivedClasses = [];
@@ -45,8 +56,8 @@ app.get('/classes', async (req, res) => {
       } else if (classInfo.classState === 'Arquivada') {
         archivedClasses.push(classInfo);
       }
-      res.render('classes', { activeClasses, archivedClasses });
     }
+      res.render('classes', { activeClasses, archivedClasses });
   } catch (error) {
     console.error('Error reading classes database:', error);
     res.status(500).send('Error reading classes database');
