@@ -7,6 +7,7 @@ const app = express();
 const classes_db = new Level('./sisapp_data/classes');
 const students_db = new Level('./sisapp_data/students');
 const enrollment_db = new Level('./sisapp_data/enrollment');
+const donation_requests_db = new Level('./sisapp_data/donation_requests');
 
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
@@ -46,11 +47,11 @@ app.get('/classes', async (req, res) => {
         archivedClasses.push(classInfo);
       }
     }
-      res.render('classes', { activeClasses, archivedClasses });
+    res.render('classes', { activeClasses, archivedClasses });
   } catch (error) {
     console.error('Error reading classes database:', error);
     res.status(500).send('Error reading classes database');
-  }  
+  }
 });
 
 app.post('/new-class', (req, res) => {
@@ -183,16 +184,55 @@ app.get('/enrollments', async (req, res) => {
   }
 });
 
+app.get('/donation-requests', async (req, res) => {
+  let year = req.query.year;
+  let month = req.query.month;
+  if(!year) {
+    year = new Date().getFullYear();
+  }
+  if(!month) {
+    month = new Date().getMonth();
+  }
+  try {
+    const donationRequests = [];
+    for await (const [key, value] of donation_requests_db.iterator()) {
+      const donationRequest = JSON.parse(value);
+      if(donationRequest.year == year
+      && donationRequest.month == month) {
+        donationRequest.id = key;
+        donationRequests.push(donationRequest);
+      }
+    }
+    res.render('donation-requests', {year, month, donationRequests});
+  } catch (error) {
+    console.error('Error reading donation requests database:', error);
+    res.status(500).send('Error reading donation requests database');
+  }
 });
 
-app.post('/donations', (req, res) => {
-    const { parentName, amount } = req.body;
-    const uniqueCode = "123456";
-    console.log("Registrando doação de " + parentName + " no valor de " + amount + " reais.");
-    // save donation data to the database
-    // send unique code in response
-    res.status(201).json({ uniqueCode });
+app.post('/gen-donation-requests', async (req, res) => {
+  const { year, month } = req.body;
+  console.log('gen-donation-requests req body:', req.body);
+  try {
+    const students = await getEnrolledStudents(year);
+    console.log('Enrolled students for year '+year+':', students);
+    for (const student of students) {
+      const request_id = nanoid(10);
+      const studentName = student.studentName;
+      donation_requests_db.put(request_id, JSON.stringify({ year, month, studentName }), (err) => {
+        if(err) {
+          throw err;
+        }
+      });
+    }
+    res.redirect('/donation-requests?year=' + year + '&month=' + month);
+  } catch (error) {
+    console.error('Error storing donation requests data:', err);
+    res.status(500).send('Error storing donation requests data');
+  }
 });
+
+app.use('/jsbarcode', express.static('node_modules/jsbarcode'));
 
 // start the server
 app.listen(3000, () => {

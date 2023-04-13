@@ -1,0 +1,73 @@
+<%- include('layout'); -%>
+<div class="container">
+  <h1>Lista de Pedidos de Doações</h1>
+  <hr>
+  <form class="form-inline mb-4">
+    <div class="form-group mr-2">
+      <label for="year">Ano:</label>
+      <select class="form-control" id="year" name="year">
+        <% const currentYear = new Date().getFullYear(); %>
+        <% for (let i = currentYear - 4; i <= currentYear+1; i++) { %>
+          <option value="<%= i %>" <%= i == year ? 'selected' : '' %>><%= i %></option>
+        <% } %>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="month">Mês:</label>
+      <select class="form-control" id="month" name="month">
+        <% const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio',
+          'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'] %>
+        <% for (let i = 1; i <= 12; i++) { %>
+          <option value="<%= i %>" <%= i == month ? 'selected' : '' %>><%= months[i - 1] %></option>
+        <% } %>
+      </select>
+    </div>
+    <button class="btn btn-primary ml-2">Buscar</button>
+  </form>
+  <% if(donationRequests.length === 0) { %>
+    <div class="alert alert-warning" role="alert">
+      Não há pedidos de doações para o mês selecionado.
+    </div>
+    <form action="/gen-donation-requests" method="post">
+      <input type="hidden" value="<%= year %>" name="year" />
+      <input type="hidden" value="<%= month %>" name="month" />
+      <button type="submit" class="btn btn-primary">Gerar Pedidos de Doação</button>
+    </form>
+  <% } else { %>
+    <button onclick="printContent()">Imprimir</button>
+    <div id="printable-content" class="a4page">
+      <%- include('print-styles'); -%>
+      <% for (let i = 0; i < donationRequests.length; i++) { %>
+        <div class="cell">
+          <div class="title">
+            <p>Contribua com o trabalho da APP</p>
+          </div>
+          <p>À família do(a) aluno(a) "<b><%= donationRequests[i].studentName %></b>",</p>
+          <div class="message">
+            <p>A Associação de Pais e Professores da Escola Abelhina Feliz, solicita doação para o mês de
+              <%= months[donationRequests[i].month-1] %> de <%= donationRequests[i].year %>.
+              Encaminhe este envelope à secretaria da escola, em breve você receberá um comprovante
+              de doação. Ao final do mês, verifique o relatório de doações para saber se sua doação
+              foi computada através do código "<b><%= donationRequests[i].id %></b>"</p>
+              
+          </div>
+          <div class="donation">
+            <p>Desejo contribuir com o valor de</p>
+            <p>R$ </p>
+          </div>
+          <div class="signature">
+            <p>________________________<br> Assinatura </p>
+          </div>
+          <div class="barcode_container">
+            <svg class="barcode" data-request-id="<%= donationRequests[i].id %>"></svg></p>
+          </div>
+        </div>
+        <% if ((i + 1) % 10 == 0) { %>
+          <div style="clear:both;"></div>
+        </div>
+        <div class="page">
+        <% } %>
+      <% } %>
+    </div>
+  <% } %>
+</div>

@@ -41,9 +41,8 @@
             Doações
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="/donations">Pedidos de Doação</a>
-            <a class="dropdown-item" href="/donations/add">Criar Pedidos</a>
-            <a class="dropdown-item" href="/donations/add">Baixa de Pedido</a>
+            <a class="dropdown-item" href="/donation-requests">Pedidos de Doação</a>
+            <a class="dropdown-item" href="/donations">Lista de Doações</a>
           </div>
         </li>
       </ul>
@@ -54,6 +53,34 @@
 	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <script src="/jsbarcode/dist/JsBarcode.all.min.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/jsbarcode.min.js"></script> -->
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const barcodes = document.querySelectorAll('.barcode');
+      barcodes.forEach(function(barcode) {
+        const requestId = barcode.dataset.requestId;
+        JsBarcode(barcode, requestId, {
+          format: "CODE128",
+          displayValue: false
+        });
+      });
+    });
+  </script>
+
+<script>
+  function printContent() {
+    var content = document.getElementById("printable-content").innerHTML;
+    var printWindow = window.open('', '', 'height=400,width=800');
+    printWindow.document.write('<html><head><title>Print</title>');
+    printWindow.document.write('</head><body >');
+    printWindow.document.write(content);
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.print();
+  }
+</script>
 
 </body>
 </html>

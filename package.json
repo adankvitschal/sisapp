@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Sistema para administração e controle financeiro de associações de pais e professores do Brasil",
   "main": "index.js",
-  "type":"module",
+  "type": "module",
   "scripts": {
     "serve": "node src/index.js",
     "test": "test"
@@ -30,6 +30,7 @@
     "body-parser": "^1.20.2",
     "ejs": "^3.1.9",
     "express": "^4.18.2",
+    "jsbarcode": "^3.11.5",
     "level": "^8.0.0",
     "nanoid": "^4.0.2",
     "pdfkit": "^0.13.0"
