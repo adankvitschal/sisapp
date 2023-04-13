@@ -1,0 +1,40 @@
+<%- include('layout'); -%>
+<div class="container">
+    <h1>Lista de Matrículas</h1>
+    <hr>
+    <form method="GET" action="/enrollments">
+        <div class="form-group">
+            <label for="yearFilter">Filtrar por Ano:</label>
+            <select class="form-control" id="yearFilter" name="yearFilter">
+                <% const currentYear = new Date().getFullYear(); %>
+                <% for (let i = currentYear - 3; i <= currentYear + 1; i++) { %>
+                    <option value="<%= i %>" <%= i == yearFilter ? "selected" : "" %>><%= i %></option>
+                <% } %>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+    </form>
+    <hr>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID da Matrícula</th>
+                <th>Ano</th>
+                <th>Nome do Aluno</th>
+                <th>Nome da Turma</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% enrollments.forEach((enrollment) => { %>
+                <% if (yearFilter === "all" || enrollment.year == yearFilter) { %>
+                    <tr>
+                        <td><%= enrollment.id %></td>
+                        <td><%= enrollment.year %></td>
+                        <td><%= enrollment.studentName %></td>
+                        <td><%= enrollment.className %></td>
+                    </tr>
+                <% } %>
+            <% }); %>
+        </tbody>
+    </table>
+</div>

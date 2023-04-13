@@ -1,0 +1,34 @@
+<%- include('layout'); -%>
+<div class="container">
+  <h1>Matrícula de Aluno</h1>
+  <hr>
+  <form method="POST" action="/new-enrollment">
+  <div class="form-group">
+    <label for="year">Ano:</label>
+    <select class="form-control" id="year" name="year">
+        <% const currentYear = new Date().getFullYear(); %>
+        <% for (let i = -3; i <= 1; i++) { %>
+            <% const year = currentYear + i; %>
+            <option value="<%= year %>" <%= i == 0 ? "selected" : "" %>><%= year %></option>
+        <% } %>
+    </select>
+  </div>
+    <div class="form-group">
+      <label for="studentName">Nome do Aluno:</label>
+      <select class="form-control" id="studentName" name="studentName">
+        <% for (const student of students) { %>
+          <option><%= student.studentName %></option>
+        <% } %>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="class-name">Turma</label>
+      <select class="form-control" id="class-name" name="className">
+        <% for (const schoolClass of schoolClasses) { %>
+          <option><%= schoolClass.className %></option>
+        <% } %>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Registrar</button>
+  </form>
+</div>

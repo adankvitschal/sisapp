@@ -1,17 +1,109 @@
 <%- include('layout'); -%>
 
 <div class="container">
-    <h1>Lista de Estudantes</h1>
+    <h1>Lista de Alunos</h1>
     <hr>
+  
+    <!-- Nav tabs -->
     <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a class="nav-link active" data-toggle="tab" href="#all-students">Todos</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#currently-enrolled">Matriculados</a>
+      </li>
+      <% for (let classItem of schoolClasses) { %>
         <li class="nav-item">
-        <a class="nav-link active" href="#">Turma 1 - 2023</a>
+          <a class="nav-link" data-toggle="tab" href="#<%= classItem.className.replace(" ","_"); %>"><%= classItem.className %></a>
         </li>
-        <li class="nav-item">
-        <a class="nav-link" href="#">Turmas 2 - 2023</a>
-        </li>
+      <% } %>
     </ul>
-    <table class="table">
-        <!-- table rows and columns here -->
-    </table>
-</div>
+  
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="all-students" role="tabpanel" aria-labelledby="all-tab">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Nome do Aluno</th>
+                    <th>Nome do Responsável</th>
+                    <th>Data de Nascimento</th>
+                    <th>Celular</th>
+                    <th>E-mail</th>
+                    <th>Permissão de Doação</th>
+                </tr>
+                </thead>
+                <tbody>
+                <% students.forEach(function(student) { %>
+                    <tr>
+                    <td><%= student.studentName %></td>
+                    <td><%= student.parentName %></td>
+                    <td><%= student.birthDate %></td>
+                    <td><%= student.phone %></td>
+                    <td><%= student.email %></td>
+                    <td><%= student.donationPermission %></td>
+                    </tr>
+                <% }); %>
+                </tbody>
+            </table>
+        </div>
+        <div class="tab-pane fade" id="currently-enrolled" role="tabpanel" aria-labelledby="all-tab">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Nome do Aluno</th>
+                    <th>Nome do Responsável</th>
+                    <th>Data de Nascimento</th>
+                    <th>Celular</th>
+                    <th>E-mail</th>
+                    <th>Permissão de Doação</th>
+                </tr>
+                </thead>
+                <tbody>
+                <% students.forEach(function(student) { %>
+                    <% if (student.currentClass !== 'Não matriculado') { %>
+                        <tr>
+                        <td><%= student.studentName %></td>
+                        <td><%= student.parentName %></td>
+                        <td><%= student.birthDate %></td>
+                        <td><%= student.phone %></td>
+                        <td><%= student.email %></td>
+                        <td><%= student.donationPermission %></td>
+                        </tr>
+                    <% } %>
+                <% }); %>
+                </tbody>
+            </table>
+        </div>
+        <% for (let classItem of schoolClasses) { %>
+            <div class="tab-pane fade" id="<%= classItem.className.replace(" ","_"); %>" role="tabpanel" aria-labelledby="all-tab">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Nome do Aluno</th>
+                        <th>Nome do Responsável</th>
+                        <th>Data de Nascimento</th>
+                        <th>Celular</th>
+                        <th>E-mail</th>
+                        <th>Permissão de Doação</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <% students.forEach(function(student) { %>
+                        <% if (student.currentClass == classItem.className) { %>
+                            <tr>
+                            <td><%= student.studentName %></td>
+                            <td><%= student.parentName %></td>
+                            <td><%= student.birthDate %></td>
+                            <td><%= student.phone %></td>
+                            <td><%= student.email %></td>
+                            <td><%= student.donationPermission %></td>
+                            </tr>
+                        <% } %>
+                    <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+  </div>
+  

@@ -6,6 +6,7 @@ import { nanoid } from 'nanoid';
 const app = express();
 const classes_db = new Level('./sisapp_data/classes');
 const students_db = new Level('./sisapp_data/students');
+const enrollment_db = new Level('./sisapp_data/enrollment');
 
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
@@ -14,18 +15,6 @@ app.set('view engine', 'ejs');
 // middleware for parsing JSON and URL-encoded data
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-app.get('/new-student', (req, res) => {
-  res.render('new-student');
-});
-
-app.get('/students', (req, res) => {
-  res.render('students');
-});
-
-app.get('/donations-form', (req, res) => {
-  res.render('donations-form');
-});
 
 app.get('/new-class', (req, res) => {
   res.render('new-class');
@@ -78,13 +67,9 @@ app.post('/new-class', (req, res) => {
 });
 
 app.post('/new-student', (req, res) => {
-  const { studentName, parentName, birthDate} = req.body;
-
-  // Generate a unique ID for the student
+  const { studentName, parentName, birthDate, phone, email, donationPermission} = req.body;
   const id = nanoid();
-
-  // Store the student data in LevelDB
-  db.put(id, JSON.stringify({ studentName, parentName, birthDate}), (err) => {
+  students_db.put(id, JSON.stringify({ studentName, parentName, birthDate, phone, email, donationPermission}), (err) => {
     if (err) {
       console.error('Error storing student data:', err);
       res.status(500).send('Error storing student data');
@@ -94,9 +79,110 @@ app.post('/new-student', (req, res) => {
   });
 });
 
-// define routes for registering students and accepting donations
-app.post('/students', (req, res) => {
-  // code for registering students
+app.get('/new-student', (req, res) => {
+  res.render('new-student');
+});
+
+async function getStudentClass(student, year) {
+  for await (const [key, value] of enrollment_db.iterator()) {
+    const enrollment = JSON.parse(value);
+    if(enrollment.year == year
+    && enrollment.studentName === student.studentName) {
+      return enrollment.className;
+    }
+  }
+  return 'Não matriculado';
+}
+
+async function getAllStudents() {
+  const students = [];
+  const currentYear = new Date().getFullYear();
+  for await (const [key, value] of students_db.iterator()) {
+    const studentInfo = JSON.parse(value);
+    studentInfo.currentClass = await getStudentClass(studentInfo, currentYear);
+    students.push(studentInfo);
+  }
+  return students;
+}
+
+app.get('/students', async (req, res) => {
+  try {
+    const students = await getAllStudents();
+    const schoolClasses = await getActiveClasses();
+    console.log('Students:', students);
+    console.log('Classes:', schoolClasses);
+    res.render('students', {students, schoolClasses});
+  } catch (error) {
+    console.error('Error reading students database:', error);
+    res.status(500).send('Error reading students database');
+  }  
+});
+
+async function getEnrolledStudents(year) {
+  const students = [];
+  for await (const [key, value] of students_db.iterator()) {
+    const student = JSON.parse(value);
+    student.currentClass = await getStudentClass(student, year);
+    if(student.currentClass !== 'Não matriculado') {
+      students.push(student);
+    }
+  }
+  return students;
+}
+
+async function getNonEnrolledStudents(year) {
+  const nonEnrolledStudents = [];
+  for await (const [key, value] of students_db.iterator()) {
+    const student = JSON.parse(value);
+    console.log(student);
+    const currentClass = await getStudentClass(student, year);
+    console.log(student.studentName + " current class:", currentClass);
+    if (!currentClass
+    || currentClass === 'Não matriculado') {
+      nonEnrolledStudents.push(student);
+    }
+  }
+  return nonEnrolledStudents;
+}
+
+app.get('/new-enrollment', async (req, res) => {
+  const currentYear = new Date().getFullYear();
+  const students = await getNonEnrolledStudents(currentYear);
+  const schoolClasses = await getActiveClasses();
+  res.render('new-enrollment', {students, schoolClasses});
+});
+
+app.post('/new-enrollment', (req, res) => {
+  const { year, studentName, className } = req.body;
+  const id = nanoid();
+  enrollment_db.put(id, JSON.stringify({ year, studentName, className }), (err) => {
+    if (err) {
+      console.error('Error storing enrollment data:', err);
+      res.status(500).send('Error storing enrollment data');
+    } else {
+      res.send('Enrollment data stored successfully');
+    }
+  });
+});
+
+app.get('/enrollments', async (req, res) => {
+  var yearFilter = req.query.yearFilter;
+  if(!yearFilter) {
+    yearFilter = new Date().getFullYear();
+  }
+  try {
+    const enrollments = [];
+    for await (const [key, value] of enrollment_db.iterator()) {
+      const enrollmentInfo = JSON.parse(value);
+      enrollments.push(enrollmentInfo);
+    }
+    res.render('enrollments', {yearFilter, enrollments});
+  } catch (error) {
+    console.error('Error reading enrollments database:', error);
+    res.status(500).send('Error reading enrollments database');
+  }
+});
+
 });
 
 app.post('/donations', (req, res) => {

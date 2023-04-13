@@ -13,14 +13,22 @@
         <label for="birthDate">Data de Nascimento</label>
         <input type="date" class="form-control" id="birthDate" name="birthDate" placeholder="Informe a data de nascimento">
     </div>
+    </div>
     <div class="form-group">
-        <label for="schoolClass">Turma</label>
-        <select class="form-control" id="schoolClass" name="schoolClass">
-            <option>Maternal I</option>
-            <option>Maternal II</option>
-            <option>Pré 1</option>
-            <option>Primeiro Ano</option>
-            <option>Segundo Ano</option>
+        <label for="phone">Telefone</label>
+        <input type="tel" class="form-control" id="phone" name="phone" placeholder="Informe o telefone do responsável">
+    </div>
+    <div class="form-group">
+        <label for="email">E-mail</label>
+        <input type="email" class="form-control" id="email" name="email" placeholder="Informe o e-mail do responsável">
+    </div>
+    <div class="form-group">
+        <label for="donationPermission">Permissão para Envio de Solicitações de Doação</label>
+        <select class="form-control" id="donationPermission" name="donationPermission">
+            <option value="nao">Nenhum</option>
+            <option value="envelope">Envelope</option>
+            <option value="email">E-mail</option>
+            <option value="whatsapp">Whatsapp</option>
         </select>
     </div>
     <button type="submit" class="btn btn-primary">Registrar</button>
