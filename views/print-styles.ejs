@@ -6,10 +6,16 @@
       padding: 0;
       page-break-after: always;
     }
+    .a4page .pageTitle {
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      margin: 20px auto;
+    }
     .cell {
-      width: 95mm;
-      height: 120mm;
-      margin: 1mm;
+      width: 100mm;
+      height: 85mm;
+      margin: 2mm;
       float: left;
       border: 3px solid black;
       overflow: hidden;
@@ -23,37 +29,60 @@
     .cell .title {
       position: center;
       text-align: center;
-      top: 2mm;
-      left: 5mm;
-      right: 5mm;
+      top: 3mm;
       font-size: 10pt;
+    }
+    .cell .logo {
+      position: absolute;
+      z-index: -1;
+      /* opacity: 0.5; */
+      /* filter: grayscale(100%); */
+      width: 15mm;
+      height: 15mm;
+      top: 1mm;
+      right: 1mm;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+      background-image: url('/img/logo_app.png');
+    }
+    .cell .intro {
+      position: absolute;
+      top: 2mm;
+      left: 3mm;
+      right: 20mm;
+      font-size: 8pt;
+      border: 2px;
     }
     .cell .message {
       position: absolute;
-      top: 30mm;
-      left: 5mm;
-      right: 5mm;
+      top: 18mm;
+      left: 3mm;
+      right: 3mm;
       font-size: 8pt;
     }
     .cell .barcode_container {
       position: absolute;
       bottom: 15mm;
-      right: 5mm;
+      left: 1mm;
       font-size: 8pt;
       text-align: center;
     }
     .cell .donation {
       position: absolute;
       bottom: 2mm;
-      left: 5mm;
+      left: 2mm;
+      height: 15mm;
       font-size: 8pt;
-      border: 2px solid black;
+      border: 2px solid rgb(0, 0, 0);
     }
     .cell .signature {
       position: absolute;
       bottom: 2mm;
       right: 5mm;
+      height: 15mm;
       font-size: 8pt;
       text-align: center;
+      vertical-align: bottom;
     }
   </style>

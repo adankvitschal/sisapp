@@ -75,7 +75,7 @@ app.post('/new-student', (req, res) => {
       console.error('Error storing student data:', err);
       res.status(500).send('Error storing student data');
     } else {
-      res.send('Student data stored successfully');
+      res.redirect('/new-student');
     }
   });
 });
@@ -161,7 +161,7 @@ app.post('/new-enrollment', (req, res) => {
       console.error('Error storing enrollment data:', err);
       res.status(500).send('Error storing enrollment data');
     } else {
-      res.send('Enrollment data stored successfully');
+      res.redirect('/new-enrollment?year=' + year);
     }
   });
 });
@@ -203,6 +203,7 @@ app.get('/donation-requests', async (req, res) => {
         donationRequests.push(donationRequest);
       }
     }
+    donationRequests.sort((a,b) => (a.classNasme > b.className) ? 1 : ((b.className > a.className) ? -1 : 0))
     res.render('donation-requests', {year, month, donationRequests});
   } catch (error) {
     console.error('Error reading donation requests database:', error);
@@ -215,11 +216,11 @@ app.post('/gen-donation-requests', async (req, res) => {
   console.log('gen-donation-requests req body:', req.body);
   try {
     const students = await getEnrolledStudents(year);
-    console.log('Enrolled students for year '+year+':', students);
     for (const student of students) {
       const request_id = nanoid(10);
       const studentName = student.studentName;
-      donation_requests_db.put(request_id, JSON.stringify({ year, month, studentName }), (err) => {
+      const className = student.currentClass;
+      donation_requests_db.put(request_id, JSON.stringify({ year, month, studentName, className}), (err) => {
         if(err) {
           throw err;
         }
@@ -233,6 +234,7 @@ app.post('/gen-donation-requests', async (req, res) => {
 });
 
 app.use('/jsbarcode', express.static('node_modules/jsbarcode'));
+app.use('/img', express.static('img'));
 
 // start the server
 app.listen(3000, () => {

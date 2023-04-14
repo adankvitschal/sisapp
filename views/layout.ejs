@@ -63,7 +63,10 @@
         const requestId = barcode.dataset.requestId;
         JsBarcode(barcode, requestId, {
           format: "CODE128",
-          displayValue: false
+          displayValue: false,
+          width: 1,
+          height: 25,
+          fontSize: 8,
         });
       });
     });
