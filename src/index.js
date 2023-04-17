@@ -1,7 +1,9 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { Level } from 'level';
-import { nanoid } from 'nanoid';
+import { customAlphabet } from 'nanoid/non-secure'
+const nanoid = customAlphabet('123456789ABCDEFGHIJKLMNOPQRTUVWXYZ', 12);
+//import { nanoid } from 'nanoid';
 
 const app = express();
 const classes_db = new Level('./sisapp_data/classes');
@@ -217,7 +219,7 @@ app.post('/gen-donation-requests', async (req, res) => {
   try {
     const students = await getEnrolledStudents(year);
     for (const student of students) {
-      const request_id = nanoid(10);
+      const request_id = nanoid();
       const studentName = student.studentName;
       const className = student.currentClass;
       donation_requests_db.put(request_id, JSON.stringify({ year, month, studentName, className}), (err) => {
