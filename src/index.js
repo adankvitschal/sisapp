@@ -168,6 +168,25 @@ app.post('/new-enrollment', (req, res) => {
   });
 });
 
+app.post('/remove-enrollment', async (req, res) => {
+  const { year, studentName, className } = req.body;
+  for await (const [key, value] of enrollment_db.iterator()) {
+    const enrollment = JSON.parse(value);
+    if(enrollment.studentName === studentName
+    && enrollment.year === year
+    && enrollment.className === className) {
+      enrollment_db.del(key, (err) => {
+        if (err) {
+          console.error('Error removing enrollment data:', err);
+          res.status(500).send('Error removing enrollment data');
+        }
+      });
+      console.log('Enrollment removed: ' + JSON.stringify(enrollment));
+      res.redirect('/enrollments?year=' + year);
+    }
+  };
+});
+
 app.get('/enrollments', async (req, res) => {
   var yearFilter = req.query.yearFilter;
   if(!yearFilter) {
