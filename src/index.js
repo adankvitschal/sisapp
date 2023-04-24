@@ -10,6 +10,7 @@ const classes_db = new Level('./sisapp_data/classes');
 const students_db = new Level('./sisapp_data/students');
 const enrollment_db = new Level('./sisapp_data/enrollment');
 const donation_requests_db = new Level('./sisapp_data/donation_requests');
+const events_db = new Level('./sisapp_data/events');
 
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
@@ -252,6 +253,23 @@ app.post('/gen-donation-requests', async (req, res) => {
     console.error('Error storing donation requests data:', err);
     res.status(500).send('Error storing donation requests data');
   }
+});
+
+app.get('/new-event', async (req, res) => {
+  res.render('new-event');
+});
+
+app.post('/new-event', (req, res) => {
+  const { event_name, event_date, item_name, item_description, item_price } = req.body;
+  const id = nanoid();
+  events_db.put(id, JSON.stringify({ event_name, event_date, item_name, item_description, item_price }), (err) => {
+    if (err) {
+      console.error('Error storing event data:', err);
+      res.status(500).send('Error event enrollment data');
+    } else {
+      res.redirect('/new-event');
+    }
+  });
 });
 
 app.use('/jsbarcode', express.static('node_modules/jsbarcode'));

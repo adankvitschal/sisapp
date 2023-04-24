@@ -1,0 +1,84 @@
+<%- include('layout'); -%>
+<h1>Registrar Evento de Arrecadação de Fundos</h1>
+<form id="fundraising-form" method="POST" action="/new-event">
+    <div class="form-group">
+      <label for="event_name">Nome do Evento:</label>
+      <input type="text" class="form-control" id="event_name" name="event_name" placeholder="Digite o nome do evento" required>
+    </div>
+    <div class="form-group">
+      <label for="event_date">Data do Evento:</label>
+      <input type="date" class="form-control" id="event_date" name="event_date" required>
+    </div>
+    <div id="item_list">
+        <table class="table table-striped">
+        <thead>
+            <tr>
+            <th>Nome</th>
+            <th>Descrição</th>
+            <th>Preço</th>
+            <th>Ação</th>
+            </tr>
+        </thead>
+        <tbody id="item_table">
+            <tr>
+                <td>
+                    <input type="text" class="form-control" id="item_name" placeholder="Digite o nome do item">
+                </td>
+                <td>
+                    <textarea class="form-control" id="item_description" rows="1" placeholder="Digite a descrição do item"></textarea>
+                </td>
+                <td>
+                    <input type="number" step="0.01" class="form-control" id="item_price" placeholder="Digite o preço do item">
+                </td>
+                <td>
+                    <button id="add_item_button" class="btn btn-primary btn-add-item">Adicionar Item</button>
+                </td>
+            </tr>
+        </tbody>
+        </table>
+    </div>
+    <button type="submit" class="btn btn-success">Enviar</button>
+  </form>
+  
+  
+  <script>
+    $(document).ready(function() {
+    var max_fields = 10; // maximum input fields allowed
+    var wrapper = $("#item_list"); // input fields wrapper
+    var add_button = $("#add_item_button"); // button class to add more input fields
+    var table = $("#item_table"); // table to display items
+
+    var x = 1; // initial input field count
+    $(add_button).click(function(e) { // on button click
+            e.preventDefault();
+            if(x < max_fields){ // check maximum allowed input fields
+                x++; // increment input field
+                const item_name = document.getElementById('item_name').value;
+                const item_description = document.getElementById('item_description').value;
+                const item_price = document.getElementById('item_price').value;
+                document.getElementById('item_name').value = '';
+                document.getElementById('item_description').value = '';
+                document.getElementById('item_price').value = '';
+                var item = '<tr>' +
+                    '<td>' + 
+                        '<input type="text" class="form-control" name="item_name[]" value=\"'+item_name+'\"">' +
+                    '</td>' +
+                    '<td>' + 
+                        '<textarea class="form-control" name="item_description[]" rows="1">' + item_description + '</textarea>' +
+                    '</td>' +
+                    '<td>' + 
+                        '<input type="number" step="0.01" class="form-control" name="item_price[]" value='+item_price+'>' +
+                    '</td>' +
+                    '<td>' +
+                        '<button class="btn btn-danger remove_button" type="button">Remover</button>' +
+                    '</td>' +
+                    '</tr>';
+                $(table).append(item); // add input fields
+            }
+        });
+
+        $(wrapper).on("click",".remove_button", function(e){ // user click on remove text
+            e.preventDefault(); $(this).parent().parent().remove(); x--;
+        })
+    });
+</script>
