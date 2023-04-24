@@ -22,6 +22,7 @@
                 <th>Ano</th>
                 <th>Nome do Aluno</th>
                 <th>Nome da Turma</th>
+                <th>Ações</th>
             </tr>
         </thead>
         <tbody>
@@ -32,6 +33,14 @@
                         <td><%= enrollment.year %></td>
                         <td><%= enrollment.studentName %></td>
                         <td><%= enrollment.className %></td>
+                        <td>
+                            <form action="/remove-enrollment" method="post">
+                                <input type="hidden" id="studentName" name="studentName" value="<%= enrollment.studentName %>">
+                                <input type="hidden" id="year" name="year", value="<%= enrollment.year %>">
+                                <input type="hidden" id="className" name="className" value="<%= enrollment.className %>">
+                                <input type="submit" name="remove" value="Remover" />
+                            </form>
+                        </td>
                     </tr>
                 <% } %>
             <% }); %>
