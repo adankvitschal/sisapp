@@ -1,0 +1,141 @@
+<%- include('layout'); -%>
+<div class="container">
+    <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-md-8">
+            <div class="card">
+              <div class="card-header">
+                <h3>Registro de Venda</h4>
+                <h4> <%- event.event_name  %></h3>
+              </div>
+              <div class="card-body">
+                <form method="POST" action="/new-sale">
+                  <input type="hidden" class="form-control" id="event_id" name="event_id" value="<%= event.id %>" readonly>
+
+                  <h3>Itens à venda</h3>
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Nome do Item</th>
+                        <th>Valor do Item</th>
+                        <th>Quantidade</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    <% for (var i = 0; i < event.item_name.length; i++) { %>
+                        <tr>
+                            <td>
+                                <input type="text" class="form-control" id="item_name_<%= i %>" name="item_name[]" value="<%= event.item_name[i] %>" readonly>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" id="item_price_<%= i %>" name="item_price[]" value="<%= event.item_price[i] %>" readonly>
+                            </td>
+                            <td>
+                                <input type="number" class="form-control item-quantity" id="item_quantity_<%= i %>" name="item_quantity[]" min="0" value="0">
+                            </td>
+                        </tr>
+                    <% } %>
+                    </tbody>
+                  </table>
+                  <div class="form-group">
+                    <label for="sale_total">Total da Venda:</label>
+                    <input type="text" class="form-control" id="sale_total" name="sale_total" readonly>
+                  </div>
+                  
+                  <hr>
+
+                  <h3>Opções de Pagamento</h3>
+                  <div class="form-group">
+                    <label for="payment_method">Método de pagamento:</label>
+                    <select class="form-control" id="payment_method" name="payment_method">
+                      <option value="cash">Dinheiro</option>
+                      <option value="card">Cartão</option>
+                      <option value="transfer">Transferência</option>
+                    </select>
+                  </div>
+
+                <div id="cash-payment-fields" style="display: block;">
+                    <hr>
+                    <h3>Pagamento em Dinheiro</h3>
+                    <div class="form-group">
+                    <label for="paid_amount">Valor Pago:</label>
+                    <input type="number" class="form-control" id="paid_amount" name="paid_amount" min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                    <label for="change_amount">Troco:</label>
+                    <input type="number" class="form-control" id="change_amount" name="change_amount" value="0" readonly>
+                    </div>
+                </div>
+
+                  <hr>
+
+                  <h3>Informações do Comprador</h3>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="buyer_name">Nome:</label>
+                        <input type="text" class="form-control" id="buyer_name" name="buyer_name">
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="buyer_cpf">CPF:</label>
+                        <input type="text" class="form-control" id="buyer_cpf" name="buyer_cpf">
+                      </div>
+                    </div>
+                  </div>
+
+                  <button type="submit" class="btn btn-primary">Registrar Venda</button>
+                </form>
+              </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+        $(document).ready(function() {
+        $("#payment_method").change(function() {
+            if ($(this).val() == "cash") {
+            $("#cash-payment-fields").show();
+            calculateChange();
+            } else {
+            $("#cash-payment-fields").hide();
+            }
+        });
+
+        $('.item-quantity').on('input', function() {
+            calculateTotal();
+        });
+      
+        $("#paid_amount").keyup(function() {
+            calculateChange();
+        });
+      
+        function calculateChange() {
+            var sale_total = parseFloat($("#sale_total").val());
+            var paid_amount = parseFloat($("#paid_amount").val());
+            var change_amount = paid_amount - sale_total;
+            $("#change_amount").val(change_amount.toFixed(2));
+        }
+        
+        function calculateTotal() {
+            var total = 0;
+            $('input[name="item_price[]"]').each(function() {
+            var quantity = parseInt($(this).closest('tr').find('input[name="item_quantity[]"]').val());
+            var value = parseFloat($(this).val());
+            total += (quantity * value);
+            });
+            var paid = parseFloat($('input[name="paid_amount"]').val()) || 0;
+            var change = (paid - total).toFixed(2);
+            $('input[name="sale_total"]').val(total.toFixed(2));
+            $('input[name="change_amount"]').val(change);
+        }
+
+        // Bind the calculateTotal function to the quantity and paid_value fields
+        $('input[name="item_quantity[]"], input[name="change_amount"]').on('input', calculateTotal);
+
+        // Trigger the calculateTotal function on page load
+        calculateTotal();
+    });
+</script>
