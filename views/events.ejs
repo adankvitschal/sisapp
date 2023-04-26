@@ -1,0 +1,29 @@
+<%- include('layout'); -%>
+<div class="container">
+    <h1>Lista de Eventos</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Nome </th>
+                <th>Itens Vendidos</th>
+                <th>Total Arrecadado</th>
+                <th> Ações </th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for (const event of events) { %>
+                <tr>
+                    <td><%= event.event_date %></td>
+                    <td><%= event.event_name %></td>
+                    <td><%= event.item_name.join(', ') %></td>
+                    <td>R$ <%= event.revenue.toFixed(2) %></td>
+                    <td>
+                        <a href="/new-sale?event_id=<%= event.id %>" class="btn btn-primary"><i class="fas fa-shopping-cart"></i> Registrar Venda</a>
+                        <a href="/event-report?event_id=<%= event.id %>" class="btn btn-primary"><i class="fas fa-file-alt"></i> Relatório</a
+                    </td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+</div>
