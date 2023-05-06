@@ -14,7 +14,7 @@
               <% const saleDate = new Date(sale.ts); %>
               <li class="<%= sale.cancellation ? 'cancelled' : '' %>">
                 <%= sale.id %> - às
-                <%= saleDate.getHours() %>:<%= saleDate.getMinutes() %> no valor de R$  
+                <%= saleDate.getHours() %>:<%= String(saleDate.getMinutes()).padStart(2, '0') %> no valor de R$  
                 <%= sale.sale_total %>
                 <% if (!sale.cancelled) { %>
                   <form id="cancel-sale-form" action="/cancel-sale" method="POST" style="display: none;">
