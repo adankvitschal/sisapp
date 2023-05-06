@@ -351,9 +351,9 @@ app.get('/new-event', async (req, res) => {
 });
 
 app.post('/new-event', (req, res) => {
-  const { event_name, event_date, item_name, item_description, item_price } = req.body;
+  const { event_name, event_date, item_name, item_description, item_price, item_discount_policy, item_discount_value } = req.body;
   const id = nanoid();
-  events_db.put(id, JSON.stringify({ event_name, event_date, item_name, item_description, item_price }), (err) => {
+  events_db.put(id, JSON.stringify({ event_name, event_date, item_name, item_description, item_price, item_discount_policy, item_discount_value }), (err) => {
     if (err) {
       console.error('Error storing event data:', err);
       res.status(500).send('Error event enrollment data');

@@ -58,6 +58,8 @@
                             </td>
                             <td>
                                 <input type="text" class="form-control" id="item_price_<%= i %>" name="item_price[]" value="<%= event.item_price[i] %>" tabindex="-1" readonly>
+                                <input type="hidden" class="form-control" id="item_discount_policy_<%= i %>" name="item_discount_policy[]" value="<%= event.item_discount_policy[i] %>" tabindex="-1" readonly>
+                                <input type="hidden" class="form-control" id="item_discount_value_<%= i %>" name="item_discount_value[]" value="<%= event.item_discount_value[i] %>" tabindex="-1" readonly>
                             </td>
                             <td>
                                 <input type="number" class="form-control item-quantity" id="item_quantity_<%= i %>" name="item_quantity[]" min="0" value="0" <%= i==0 ? 'autofocus' : '' %> onfocus="this.select();" >
@@ -67,10 +69,14 @@
                     </tbody>
                   </table>
                   <div class="form-group">
-                    <label for="sale_total">Total da Venda:</label>
-                    <input type="text" class="form-control" id="sale_total" name="sale_total" tabindex="-1" readonly>
+                    <label for="sale_total">Desconto:</label>
+                    <input type="number" class="form-control" id="sale_discount" name="sale_discount" tabindex="-1" readonly>
                   </div>
-                  
+                  <div class="form-group">
+                    <label for="sale_total">Total da Venda:</label>
+                    <input type="number" class="form-control" id="sale_total" name="sale_total" tabindex="-1" readonly>
+                  </div>
+
                   <hr>
 
                   <!-- <h3>Opções de Pagamento</h3>
@@ -151,18 +157,27 @@
             var change_amount = paid_amount - sale_total;
             $("#change_amount").val(change_amount.toFixed(2));
         }
-        
+
         function calculateTotal() {
             var total = 0;
+            var discount = 0;
             $('input[name="item_price[]"]').each(function() {
               var quantity = parseInt($(this).closest('tr').find('input[name="item_quantity[]"]').val());
               var value = parseFloat($(this).val());
+              const discount_policy = $(this).closest('tr').find('input[name="item_discount_policy[]"]').val();
+              const discount_value = parseFloat($(this).closest('tr').find('input[name="item_discount_value[]"]').val());
               if(!isNaN(quantity) && !isNaN(value)) {
                   total += (quantity * value);
               }
+              if(discount_policy === 'par') {
+                const numPairs = Math.floor(quantity / 2);
+                discount += discount_value * numPairs;
+              }
             });
+            total -= discount;
             var paid = parseFloat($('input[name="paid_amount"]').val()) || 0;
             var change = (paid - total).toFixed(2);
+            $('input[name="sale_discount"]').val(discount.toFixed(2));
             $('input[name="sale_total"]').val(total.toFixed(2));
             $('input[name="change_amount"]').val(change);
         }
