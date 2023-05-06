@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import { Level } from 'level';
 import { customAlphabet } from 'nanoid/non-secure'
 const nanoid = customAlphabet('123456789ABCDEFGHIJKLMNOPQRTUVWXYZ', 12);
+import { saleReceipt } from './receiptPrinter.js';
 //import { nanoid } from 'nanoid';
 
 const app = express();
