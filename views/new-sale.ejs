@@ -193,11 +193,11 @@
 <script>
   function cancelSale(saleId) {
     // Ask for confirmation
-    var confirmation = confirm("Are you sure you want to cancel this sale?");
+    var confirmation = confirm("Tem certeza que deseja cancelar a venda "+saleId+"?");
 
     // If user confirms, prompt for reason
     if (confirmation) {
-      var reason = prompt("Please enter the reason for canceling the sale:");
+      var reason = prompt("Por favor, informe brevemente a razão do cancelamento:");
 
       // Proceed with canceling the sale
       if (reason) {
