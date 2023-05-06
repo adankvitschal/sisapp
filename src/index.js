@@ -368,6 +368,8 @@ app.use('/css', express.static('css'));
 app.use('/jsbarcode', express.static('node_modules/jsbarcode/dist'));
 app.use('/bootstrap', express.static('node_modules/bootstrap/dist'));
 app.use('/fontawesome-free', express.static('node_modules/@fortawesome/fontawesome-free'));
+app.use('/jquery', express.static('node_modules/jquery/dist/'));
+app.use('/popper.js', express.static('node_modules/popper.js/dist/'));
 
 // start the server
 app.listen(3000, () => {
