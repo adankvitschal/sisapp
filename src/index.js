@@ -327,8 +327,11 @@ app.post('/new-event', (req, res) => {
   });
 });
 
-app.use('/jsbarcode', express.static('node_modules/jsbarcode'));
 app.use('/img', express.static('img'));
+app.use('/css', express.static('css'));
+app.use('/jsbarcode', express.static('node_modules/jsbarcode/dist'));
+app.use('/bootstrap', express.static('node_modules/bootstrap/dist'));
+app.use('/fontawesome-free', express.static('node_modules/@fortawesome/fontawesome-free'));
 
 // start the server
 app.listen(3000, () => {
