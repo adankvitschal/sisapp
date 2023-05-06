@@ -13,6 +13,7 @@ const enrollment_db = new Level('./sisapp_data/enrollment');
 const donation_requests_db = new Level('./sisapp_data/donation_requests');
 const events_db = new Level('./sisapp_data/events');
 const sales_db = new Level('./sisapp_data/sales');
+const sale_cancellations_db = new Level('./sisapp_data/sale_cancellations');
 
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
@@ -262,7 +263,7 @@ async function getEventRevenue(event) {
   for await (const [key, value] of sales_db.iterator()) {
     const sale = JSON.parse(value);
     if(sale.event_id === event.id) {
-      revenue += sale.amount;
+      revenue += Number(sale.sale_total);
     }
   }
   return revenue;
@@ -280,6 +281,26 @@ app.get('/events', async (req, res) => {
   res.render('events', {events});
 })
 
+async function getLatestSales(event_id) {
+  const latest_sales = [];
+  for await (const [key, value] of sales_db.iterator()) {
+    const sale = JSON.parse(value);
+    if(sale.event_id === event_id) {
+      sale.id = key;
+      try {
+        sale.cancellation = JSON.parse(await sale_cancellations_db.get(key));
+      } catch(error) {
+        // ignore
+      }
+      latest_sales.push(sale);
+      if(latest_sales.length >= 5) {
+        break;
+      }
+    }
+  }
+  return latest_sales;
+}
+
 app.get('/new-sale', async (req, res) => {
   const event_id = req.query.event_id;
   if(!event_id) {
@@ -292,23 +313,37 @@ app.get('/new-sale', async (req, res) => {
     return;
   }
   event.id = event_id;
-  res.render('new-sale', {event});
+  const latest_sales = await getLatestSales(event_id);
+  res.render('new-sale', {event, latest_sales});
 });
 
 app.post('/new-sale', async (req, res) => {
-  const { event_id, item_name, item_quantity } = req.body;
+  const { event_id, item_name, item_quantity, item_price, sale_total, buyer_name, buyer_cpf } = req.body;
   console.log(req.body);
-  res.status(200).send('OK');
-  //res.redirect('/new-sale?event_id=' + event_id);
-  //const id = nanoid();
-  // sales_db.put(id, JSON.stringify({ event_id, amount, item_name, item_description }), (err) => {
-  //   if (err) {
-  //     console.error('Error storing sale data:', err);
-  //     res.status(500).send('Error storing sale data');
-  //   } else {
-  //     res.redirect('/new-sale?event_id=' + event_id);
-  //   }
-  // });
+  const id = nanoid();
+  sales_db.put(id, JSON.stringify({ event_id, ts: Date.now(), item_name, item_quantity, item_price, sale_total, buyer_name, buyer_cpf }), (err) => {
+    if (err) {
+      console.error('Error storing sale data:', err);
+      res.status(500).send('Error storing sale data');
+    } else {
+      res.redirect('/new-sale?event_id=' + event_id);
+    }
+  });
+  const event_info = JSON.parse(await events_db.get(event_id));
+  saleReceipt({id, event_info, item_name, item_quantity, item_price, sale_total, buyer_name, buyer_cpf});
+});
+
+app.post('/cancel-sale', async (req, res) => {
+  const { event_id, sale_id, reason } = req.body;
+  console.log(req.body);
+  sale_cancellations_db.put(sale_id, JSON.stringify({ ts: Date.now(), reason }), (err) => {
+    if (err) {
+      console.error('Error storing sale cancellation data:', err);
+      res.status(500).send('Error storing sale cancellation data');
+    } else {
+      res.redirect('/new-sale?event_id=' + event_id);
+    }
+  });
 });
 
 app.get('/new-event', async (req, res) => {

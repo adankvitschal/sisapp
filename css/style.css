@@ -1,0 +1,48 @@
+.sidebar {
+    background-color: #f9f9f9;
+    padding: 20px;
+    /* Add other styles as needed */
+}
+.sidebar-container {
+    position: fixed;
+    top: 25%;
+    right: -50%; /* Start with sidebar hidden */
+    width: 50%;
+    height: 50%;
+    background-color: #f9f9f9;
+    transition: right 0.3s ease;
+    z-index: 9999;
+}
+
+.sidebar-toggle {
+    position: absolute;
+    top: 0px;
+    left: -40px;
+    width: 40px;
+    height: 40px;
+    background-color: #f9f9f9;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: right 0.3s ease;
+    cursor: pointer;
+}
+
+.sidebar-toggle i {
+    color: #888888;
+}
+
+.sidebar-container.open {
+    right: 0;
+}
+
+.sidebar-container.open .sidebar-toggle {
+    left: -20px; /* Adjust the position of the toggle button when sidebar is open */
+}
+.cancelled {
+    text-decoration: line-through;
+    color: #888888;
+    /* Add other styles as needed */
+}

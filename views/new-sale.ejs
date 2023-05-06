@@ -1,13 +1,42 @@
 <%- include('layout'); -%>
 <div class="container">
     <div class="container">
+      <div class="sidebar-container">
+        <button class="sidebar-toggle">
+          <i class="fa-solid fa-book"></i>
+          <!-- <p>Últimas vendas</p> -->
+        </button>
+        <div class="sidebar">
+          <h3>Últimas Vendas</h3>
+          <ul>
+            <% latest_sales.forEach(sale => { %>
+              <% console.log(sale); %>
+              <% const saleDate = new Date(sale.ts); %>
+              <li class="<%= sale.cancellation ? 'cancelled' : '' %>">
+                <%= sale.id %> - às
+                <%= saleDate.getHours() %>:<%= saleDate.getMinutes() %> no valor de R$  
+                <%= sale.sale_total %>
+                <% if (!sale.cancelled) { %>
+                  <form id="cancel-sale-form" action="/cancel-sale" method="POST" style="display: none;">
+                    <input type="hidden" id="event-id" name="event_id" value="<%= event.id %>"">
+                    <input type="hidden" id="sale-id" name="sale_id" value="">
+                    <input type="hidden" id="cancel-reason" name="reason" value="">
+                  </form>
+                  
+                  <button class="cancel-sale-button" onclick="cancelSale('<%= sale.id %>')"><i class="fas fa-times"></i></a></button>
+                <% } %>
+              </li>
+            <% }); %>
+          </ul>
+        </div>
+      </div>   
         <div class="row justify-content-center">
           <div class="col-md-8">
             <div class="card">
               <div class="card-header">
                 <h3>Registro de Venda</h4>
                 <h4> <%- event.event_name  %></h3>
-              </div>
+              </div>       
               <div class="card-body">
                 <form method="POST" action="/new-sale">
                   <input type="hidden" class="form-control" id="event_id" name="event_id" value="<%= event.id %>" readonly>
@@ -25,13 +54,13 @@
                     <% for (var i = 0; i < event.item_name.length; i++) { %>
                         <tr>
                             <td>
-                                <input type="text" class="form-control" id="item_name_<%= i %>" name="item_name[]" value="<%= event.item_name[i] %>" readonly>
+                                <input type="text" class="form-control" id="item_name_<%= i %>" name="item_name[]" value="<%= event.item_name[i] %>" tabindex="-1" readonly>
                             </td>
                             <td>
-                                <input type="text" class="form-control" id="item_price_<%= i %>" name="item_price[]" value="<%= event.item_price[i] %>" readonly>
+                                <input type="text" class="form-control" id="item_price_<%= i %>" name="item_price[]" value="<%= event.item_price[i] %>" tabindex="-1" readonly>
                             </td>
                             <td>
-                                <input type="number" class="form-control item-quantity" id="item_quantity_<%= i %>" name="item_quantity[]" min="0" value="0">
+                                <input type="number" class="form-control item-quantity" id="item_quantity_<%= i %>" name="item_quantity[]" min="0" value="0" <%= i==0 ? 'autofocus' : '' %> onfocus="this.select();" >
                             </td>
                         </tr>
                     <% } %>
@@ -39,12 +68,12 @@
                   </table>
                   <div class="form-group">
                     <label for="sale_total">Total da Venda:</label>
-                    <input type="text" class="form-control" id="sale_total" name="sale_total" readonly>
+                    <input type="text" class="form-control" id="sale_total" name="sale_total" tabindex="-1" readonly>
                   </div>
                   
                   <hr>
 
-                  <h3>Opções de Pagamento</h3>
+                  <!-- <h3>Opções de Pagamento</h3>
                   <div class="form-group">
                     <label for="payment_method">Método de pagamento:</label>
                     <select class="form-control" id="payment_method" name="payment_method">
@@ -52,7 +81,7 @@
                       <option value="card">Cartão</option>
                       <option value="transfer">Transferência</option>
                     </select>
-                  </div>
+                  </div> -->
 
                 <div id="cash-payment-fields" style="display: block;">
                     <hr>
@@ -63,11 +92,11 @@
                     </div>
                     <div class="form-group">
                     <label for="change_amount">Troco:</label>
-                    <input type="number" class="form-control" id="change_amount" name="change_amount" value="0" readonly>
+                    <input type="number" class="form-control" id="change_amount" name="change_amount" value="0" tabindex="-1" readonly>
                     </div>
                 </div>
 
-                  <hr>
+                  <!-- <hr>
 
                   <h3>Informações do Comprador</h3>
                   <div class="row">
@@ -83,7 +112,7 @@
                         <input type="text" class="form-control" id="buyer_cpf" name="buyer_cpf">
                       </div>
                     </div>
-                  </div>
+                  </div> -->
 
                   <button type="submit" class="btn btn-primary">Registrar Venda</button>
                 </form>
@@ -94,7 +123,7 @@
 </div>
 
 <script>
-        $(document).ready(function() {
+    $(document).ready(function() {
         $("#payment_method").change(function() {
             if ($(this).val() == "cash") {
             $("#cash-payment-fields").show();
@@ -102,6 +131,10 @@
             } else {
             $("#cash-payment-fields").hide();
             }
+        });
+
+        $(".sidebar-toggle").click(function() {
+          $(".sidebar-container").toggleClass("open");
         });
 
         $('.item-quantity').on('input', function() {
@@ -122,9 +155,11 @@
         function calculateTotal() {
             var total = 0;
             $('input[name="item_price[]"]').each(function() {
-            var quantity = parseInt($(this).closest('tr').find('input[name="item_quantity[]"]').val());
-            var value = parseFloat($(this).val());
-            total += (quantity * value);
+              var quantity = parseInt($(this).closest('tr').find('input[name="item_quantity[]"]').val());
+              var value = parseFloat($(this).val());
+              if(!isNaN(quantity) && !isNaN(value)) {
+                  total += (quantity * value);
+              }
             });
             var paid = parseFloat($('input[name="paid_amount"]').val()) || 0;
             var change = (paid - total).toFixed(2);
@@ -138,4 +173,26 @@
         // Trigger the calculateTotal function on page load
         calculateTotal();
     });
+</script>
+
+<script>
+  function cancelSale(saleId) {
+    // Ask for confirmation
+    var confirmation = confirm("Are you sure you want to cancel this sale?");
+
+    // If user confirms, prompt for reason
+    if (confirmation) {
+      var reason = prompt("Please enter the reason for canceling the sale:");
+
+      // Proceed with canceling the sale
+      if (reason) {
+        // Set the sale ID and reason in the form
+        document.getElementById('sale-id').value = saleId;
+        document.getElementById('cancel-reason').value = reason;
+
+        // Submit the form
+        document.getElementById('cancel-sale-form').submit();
+      }
+    }
+  }
 </script>
