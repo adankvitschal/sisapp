@@ -293,12 +293,10 @@ async function getLatestSales(event_id) {
         // ignore
       }
       latest_sales.push(sale);
-      if(latest_sales.length >= 5) {
-        break;
-      }
     }
   }
-  return latest_sales;
+  latest_sales.sort((a,b) => (a.ts > b.ts) ? -1 : ((b.ts > a.ts) ? 1 : 0));
+  return latest_sales.slice(0, 5);
 }
 
 app.get('/new-sale', async (req, res) => {
