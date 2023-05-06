@@ -17,9 +17,9 @@
 .sidebar-toggle {
     position: absolute;
     top: 0px;
-    left: -40px;
-    width: 40px;
-    height: 40px;
+    left: -80px;
+    width: 80px;
+    height: 80px;
     background-color: #f9f9f9;
     border: none;
     border-radius: 50%;
@@ -40,6 +40,8 @@
 
 .sidebar-container.open .sidebar-toggle {
     left: -20px; /* Adjust the position of the toggle button when sidebar is open */
+    width: 40px;
+    height: 40px;
 }
 .cancelled {
     text-decoration: line-through;
