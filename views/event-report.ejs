@@ -1,0 +1,102 @@
+<%- include('layout'); -%>
+<%- include('print-styles'); -%>
+<% const colors = event_stats.item_names.map(() => '#' + Math.floor(Math.random() * 16777215).toString(16)); %>
+<div class="container" id="printable-content">
+  <div class="a4page">
+    <h1>Relatório de Vendas</h1>
+    
+    <table class="table">
+      <tr>
+        <th>Total de Vendas</th>
+        <th>Receita do Evento</th>
+      </tr>
+      <tr>
+        <td><%= event_stats.total_sales %></td>
+        <td>R$ <%= event_stats.total_revenue %></td>
+      </tr>
+    </table>
+    
+    <div>
+      <div class="col2-container">
+        <div class="left-div">
+          <h3> Quantidades por item </h3>
+          <canvas id="quantity-per-item-chart" width="120" height="120"></canvas>
+        </div>
+        <div class="right-div">
+          <h3> Receita por item </h3>
+          <canvas id="revenue-per-item-chart" width="120" height="120"></canvas>
+        </div>
+      </div>
+      <table class="table">
+        <tr>
+          <th>Item</th>
+          <th>Quantidade Vendida</th>
+          <th>Receita por Item</th>
+        </tr>
+        <% for (let i=0;i < event_stats.item_names.length; i++) { %>
+          <tr>
+            <td>
+              <span class="color-square" style="background-color: <%= colors[i] %>"></span>
+              <%= event_stats.item_names[i] %></td>
+            <td><%= event_stats.sold_quantities[i] %></td>
+            <td>R$ <%= event_stats.revenue_per_item[i] %></td>
+          </tr>
+        <% } %>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  const itemNames = <%- JSON.stringify(event_stats.item_names) %>;
+  const soldQuantities = <%= JSON.stringify(Object.values(event_stats.sold_quantities)) %>;
+  const revenuePerItem = <%= JSON.stringify(Object.values(event_stats.revenue_per_item)) %>;
+  
+  console.log(itemNames);
+
+  const quantity_ctx = document.getElementById('quantity-per-item-chart').getContext('2d');
+  new Chart(quantity_ctx, {
+    type: 'pie',
+    data: {
+      labels: itemNames,
+      datasets: [{
+        label: 'Quantidade Vendida',
+        data: soldQuantities,
+        backgroundColor: <%- JSON.stringify(colors) %>
+      }]
+    },
+    options: {
+      responsive: true,
+      title: {
+        display: true,
+        text: 'Vendas por Item'
+      },
+      legend: {
+        display: false
+      }
+    }
+  });
+
+  const revenue_ctx = document.getElementById('revenue-per-item-chart').getContext('2d');
+  new Chart(revenue_ctx, {
+    type: 'pie',
+    data: {
+      labels: itemNames,
+      datasets: [{
+        label: '',
+        data: revenuePerItem,
+        backgroundColor: <%- JSON.stringify(colors) %>
+      }]
+    },
+    options: {
+      responsive: true,
+      title: {
+        display: true,
+        text: 'Vendas por Item'
+      },
+      legend: {
+        display: false
+      }
+    }
+  });
+</script>

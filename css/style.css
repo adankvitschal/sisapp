@@ -48,3 +48,21 @@
     color: #888888;
     /* Add other styles as needed */
 }
+
+.col2-container {
+    width: 100%;
+}
+
+.left-div, .right-div {
+    display: inline-block;
+    width: 45%;
+    vertical-align: top;
+  }
+
+  .color-square {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-right: 5px;
+    border-radius: 2px;
+  }

@@ -344,6 +344,47 @@ app.post('/cancel-sale', async (req, res) => {
   });
 });
 
+async function getEventStats(event) {
+  const event_stats = {
+    total_sales: 0,
+    total_revenue: 0,
+    item_names: event.item_name,
+    sold_quantities: new Array(event.item_name.length).fill(0),
+    revenue_per_item: new Array(event.item_name.length).fill(0)
+  };
+  for await (const [key, value] of sales_db.iterator()) {
+    const sale = JSON.parse(value);
+    if(sale.event_id === event.id) {
+      event_stats.total_sales++;
+      event_stats.total_revenue += Number(sale.sale_total);
+      for(let i=0; i<sale.item_name.length; i++) {
+        if(sale.item_quantity[i] > 0) {
+          event_stats.sold_quantities[i] += Number(sale.item_quantity[i]);
+          event_stats.revenue_per_item[i] += Number(sale.item_quantity[i]) * Number(event.item_price[i]);
+        }
+      }
+    }
+  }
+  return event_stats;
+}
+
+app.get('/event-report', async (req, res) => {
+  const event_id = req.query.event_id;
+  if(!event_id) {
+    res.status(400).send('Missing event_id');
+    return;
+  }
+  const event = JSON.parse(await events_db.get(event_id));
+  if(!event) {
+    res.status(404).send('Event not found');
+    return;
+  }
+  event.id = event_id;
+  const event_stats = await getEventStats(event);
+  console.log(event_stats);
+  res.render('event-report', {event_stats});
+});
+
 app.get('/new-event', async (req, res) => {
   res.render('new-event');
 });
@@ -368,6 +409,7 @@ app.use('/bootstrap', express.static('node_modules/bootstrap/dist'));
 app.use('/fontawesome-free', express.static('node_modules/@fortawesome/fontawesome-free'));
 app.use('/jquery', express.static('node_modules/jquery/dist/'));
 app.use('/popper.js', express.static('node_modules/popper.js/dist/'));
+app.use('/chartjs', express.static('node_modules/chartjs/'));
 
 // start the server
 app.listen(3000, () => {
